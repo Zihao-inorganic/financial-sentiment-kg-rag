@@ -4,6 +4,8 @@ Implementation of the method described in **Combining LLM-Generated Knowledge
 Graphs with RAG for Financial Sentiment Extraction**, by Zihao Huang, Kelvin Du,
 Xulang Zhang, Rui Mao, and Erik Cambria.
 
+Paper: [PDF](https://sentic.net/knowledge-graphs-with-rag-for-financial-sentiment-extraction.pdf).
+
 The method combines LLM-generated knowledge graphs with retrieval-augmented
 generation for financial sentiment classification. See the paper for experimental
 results and analysis.
@@ -140,3 +142,21 @@ python -m unittest discover -s tests -v
 
 PhraseBank is distributed under CC BY-NC-SA 3.0; Twitter Financial News uses the
 MIT licence.
+
+## Citation
+
+If you find this work useful, please consider citing our paper:
+
+```bibtex
+@INPROCEEDINGS{11415819,
+  author={Huang, Zihao and Du, Kelvin and Zhang, Xulang and Mao, Rui and Cambria, Erik},
+  booktitle={2025 IEEE International Conference on Data Mining Workshops (ICDMW)},
+  title={Combining LLM-Generated Knowledge Graphs with RAG for Financial Sentiment Extraction},
+  year={2025},
+  volume={},
+  number={},
+  pages={2056-2063},
+  keywords={Training;Sentiment analysis;Technological innovation;Accuracy;Social networking (online);Computational modeling;Retrieval augmented generation;Knowledge graphs;Market research;Reliability;financial sentiment analysis;NLP;RAG;LLM},
+  doi={10.1109/ICDMW69685.2025.00250}
+}
+```
