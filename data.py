@@ -49,7 +49,7 @@ def download(path, repo, revision, filename):
 
 
 def remove_overlap(train, evaluation):
-    """Never put an evaluation text into the graph, even under a different row ID."""
+    """Remove training texts matching normalized evaluation texts."""
     heldout = {normalized(row["text"]) for row in evaluation}
     return [row for row in train if normalized(row["text"]) not in heldout]
 

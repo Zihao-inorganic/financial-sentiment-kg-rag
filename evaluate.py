@@ -90,7 +90,6 @@ def evaluate(data, graph, model, output, limit=None, workers=8, top_k=5, max_nei
 
     def score(item):
         i, row = item
-        # Only the query text reaches prediction; evaluation labels never enter prompts.
         query = row["text"]
         cot = model.chat(prompts.cot(query), max_tokens=1200)
         kg = predict(query, vectors[i], retriever, model, top_k, max_neighbors)

@@ -1,4 +1,4 @@
-"""Small offline checks for label mapping, leakage and graph routing."""
+"""Offline tests for data processing, parsing, caching and graph routing."""
 
 import json
 from copy import deepcopy
@@ -78,7 +78,7 @@ class PipelineTests(unittest.TestCase):
             result = predict("query", self.vectors[0], self.retriever, model, top_k=1)
         self.assertEqual(result["route"], "retrieval")
 
-    def test_invalid_outputs_fail_instead_of_becoming_neutral(self):
+    def test_invalid_outputs_raise_errors(self):
         self.assertEqual(parse_sentiment("Explanation\nSentiment: 2"), 2)
         self.assertFalse(parse_sufficiency("**No**. Not enough information."))
         for text in ("neutral", "Sentiment: 20", "Sentiment: [0/1/2]"):
@@ -89,12 +89,12 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_graph({"entities": [], "relations": [edge("A", "B", 0)], "sentiment_label": "Bullish"}, "Bullish")
 
-    def test_undeclared_endpoints_get_stubs_without_invented_attributes(self):
+    def test_relation_endpoints_receive_default_attributes(self):
         graph = validate_graph({"entities": [], "relations": [edge("A", "B")], "sentiment_label": "Bullish"}, "Bullish")
         self.assertEqual({e["name"] for e in graph["entities"]}, {"A", "B"})
         self.assertTrue(all(e["type"] == "Unspecified" and e["attributes"] == {} for e in graph["entities"]))
 
-    def test_descriptive_edge_sentiment_is_not_forced_to_a_class(self):
+    def test_descriptive_edge_sentiments_are_preserved(self):
         relation = {**edge("A", "B"), "sentiment": "Mixed"}
         graph = validate_graph({"entities": [], "relations": [relation], "sentiment_label": "Bullish"}, "Bullish")
         self.assertEqual(graph["relations"][0]["sentiment"], "Mixed")

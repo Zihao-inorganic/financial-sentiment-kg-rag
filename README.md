@@ -17,8 +17,8 @@ results and analysis.
 2. **Build the graph.** Merge each cluster into a coherent text, then extract
    entities and sentiment-labelled relations. The extraction prompt covers
    numerical, temporal, comparative, causal, and risk information.
-3. **Retrieve knowledge.** Convert relations into sentences, embed them with
-   `text-embedding-ada-002`, and retrieve relevant relations using FAISS cosine
+3. **Retrieve knowledge.** Convert relations into sentences, embed them with the
+   configured embedding model, and retrieve relevant relations using FAISS cosine
    similarity.
 4. **Expand context.** Check whether the retrieved knowledge is sufficient. When
    needed, retrieve one-hop neighbours and check again.
@@ -93,9 +93,9 @@ Datasets are downloaded automatically from
 [Financial PhraseBank](https://huggingface.co/datasets/takala/financial_phrasebank)
 and [Twitter Financial News](https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment).
 Available dataset names are `phrasebank50`, `phrasebank100`, and `twitter`.
-PhraseBank uses a 70/30 split with seed 42; Twitter uses its supplied train and
-validation splits. Training texts duplicated in the evaluation split are removed
-before graph construction.
+PhraseBank uses a 70/30 split with seed 42 by default; Twitter uses its supplied
+train and validation splits. Training texts duplicated in the evaluation split
+are removed before graph construction.
 
 | Argument | Default | Purpose |
 | --- | --- | --- |
@@ -115,10 +115,10 @@ K-Means uses `ceil(n / cluster_size)` clusters within each label, with
 
 ## Outputs
 
-Each dataset has its own directory under `runs/main/`:
+Pipeline outputs are written to `runs/main/<dataset>/` by default:
 
 - `groups/`: merged texts, source IDs and extracted graphs.
-- `graph.json`: combined graph with entity attributes and sentiment-labelled relations.
+- `graph.json`: extracted entities and sentiment-labelled relations.
 - `evaluation.json`: configuration and data checksums.
 - `predictions.jsonl`: CoT and KG-RAG predictions, retrieved relation IDs and routing decisions.
 - `metrics.json`: accuracy, macro-F1, confusion matrices and retrieval/fallback breakdown.

@@ -27,7 +27,7 @@ def cluster_rows(rows, vectors, cluster_size=20, max_cluster_size=30, seed=42):
             assignments = KMeans(n_clusters=count, random_state=seed, n_init=10).fit_predict(vectors[indices])
             for cluster_id in sorted(set(assignments)):
                 members = [rows[i] for i, c in zip(indices, assignments) if c == cluster_id]
-                # Bound extraction output length; never mix labels or drop outliers.
+                # Split large clusters to bound extraction output length.
                 for start in range(0, len(members), max_cluster_size):
                     groups.append(members[start:start + max_cluster_size])
     return groups
@@ -51,8 +51,7 @@ def validate_graph(graph, expected_label):
         if not all(isinstance(relation.get(k), str) and relation[k].strip()
                    for k in ("source", "target", "type", "sentiment")):
             raise ValueError("Invalid graph relation")
-        # Appendix B uses a free-form edge sentiment, not a three-value enum.
-        # Preserve mixed/descriptive edge sentiments; only final predictions are 0/1/2.
+        # Canonicalize class aliases and retain descriptive relation sentiments.
         value = relation["sentiment"].strip()
         relation["sentiment"] = aliases.get(value.lower(), value)
         if type(relation.get("distance")) is not int or relation["distance"] < 1:
@@ -61,8 +60,7 @@ def validate_graph(graph, expected_label):
                              "source and target have the same name; never use distance 0")
         for field in ("source", "target"):
             if normalized(relation[field]) not in names:
-                # Some valid edges omit an endpoint from the entity list. Preserve
-                # the explicit name without inventing its type or other attributes.
+                # Add entity records for relation endpoints.
                 graph["entities"].append({"name": relation[field], "type": "Unspecified", "attributes": {}})
                 names.add(normalized(relation[field]))
     return graph
@@ -206,7 +204,7 @@ class Retriever:
             for field in ("source", "target"):
                 candidates.update(self.adjacency[normalized(self.relations[i][field])])
         candidates.difference_update(indices)
-        # Freeze the frontier: this is exactly one hop, not recursive expansion.
+        # Rank direct neighbors of the initially retrieved relations.
         ranked = sorted(candidates, key=lambda i: (-float(self.vectors[i] @ vector), i))
         return indices + ranked[:max_neighbors]
 
